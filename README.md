@@ -17,3 +17,39 @@ When you idft an image, the source file is a .idft file made via the dft command
 This utility uses:
 * simple_fft to do dft and idft operations: https://github.com/d1vanov/Simple-FFT
 * stb to read and write images: https://github.com/nothings/stb
+
+# Example: LokiAlan
+
+![](assets/lokialan.jpg?raw=true)
+
+```DFT dft assets/LokiAlan.jpg out/LokiAlan```
+
+Frequency Magnitudes:
+
+![](out/LokiAlan.mag.png?raw=true)
+
+Frequency Phases:
+
+![](out/LokiAlan.phase.png?raw=true)
+
+```DFT idft out/LokiAlan.dft out/LokiAlanRT```
+
+![](out/LokiAlanRT.png?raw=true)
+
+# Example: BlueNoise
+
+![](assets/BlueNoise.png?raw=true)
+
+```DFT dft assets/BlueNoise.png out/BlueNoise```
+
+Frequency Magnitudes:
+
+![](out/BlueNoise.mag.png?raw=true)
+
+Frequency Phases:
+
+![](out/BlueNoise.phase.png?raw=true)
+
+```DFT idft out/BlueNoise.dft out/BlueNoiseRT```
+
+![](out/BlueNoiseRT.png?raw=true)
