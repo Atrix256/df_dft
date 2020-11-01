@@ -3,7 +3,7 @@
 Simple command line to dft/idft images.
 
 Usage:
-DFT <dft|idft> <source file> <dest file>
+`DFT <dft|idft> <source file> <dest file>`
 
 when you dft an image, the source file is an image file.  It turns it to greyscale, and then generates the following files:
 * .raw.png - this is the greyscale image given to dft.
