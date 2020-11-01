@@ -13,8 +13,10 @@
 
 #include <vector>
 
-// if true, will put magntiude through a log function before display
+// if true, will put magntiude through a log function before making the magnitude image
 #define MAGNITUDE_LOG() true
+
+// If true, will zero out the DC magnitude from the magnitude image before showing it, since DC is usually very large.
 #define MAGNITUDE_ZERODC() false
 
 static const float c_pi = 3.14159265359f;
@@ -217,7 +219,49 @@ void DFT(const char* srcFileName, const char* destFileName)
 
 void IDFT(const char* fileName, const char* destFileName)
 {
-    // TODO: this!
+    char buffer[4096];
+
+    // read in the complex image
+    ComplexImage2D complexImageIn;
+    {
+        FILE* file = nullptr;
+        fopen_s(&file, fileName, "rb");
+        uint32_t w, h;
+        fread(&w, sizeof(w), 1, file);
+        fread(&h, sizeof(h), 1, file);
+
+        complexImageIn.Resize(w, h);
+
+        fread(complexImageIn.pixels.data(), sizeof(double) * 2 * complexImageIn.pixels.size(), 1, file);
+
+        fclose(file);
+    }
+
+    // IDFT the image
+    ComplexImage2D complexImageOut;
+    {
+        const char* error = nullptr;
+        complexImageOut.Resize(complexImageIn.m_width, complexImageIn.m_height);
+        simple_fft::IFFT(complexImageIn, complexImageOut, complexImageIn.m_width, complexImageIn.m_height, error);
+    }
+
+    // convert to U8 and write it out
+    {
+        std::vector<uint8_t> pixels;
+        pixels.resize(complexImageOut.pixels.size());
+
+        for (size_t index = 0; index < complexImageOut.pixels.size(); ++index)
+        {
+            const complex_type& c = complexImageOut.pixels[index];
+            float mag = float(sqrt(c.real() * c.real() + c.imag() * c.imag()));
+
+            pixels[index] = (uint8_t)Clamp(mag * 256.0f, 0.0f, 255.0f);
+        }
+
+        strcpy(buffer, destFileName);
+        strcat(buffer, ".png");
+        stbi_write_png(buffer, (int)complexImageOut.m_width, (int)complexImageOut.m_height, 1, pixels.data(), (int)complexImageOut.m_width);
+    }
 }
 
 void ShowUsage()
